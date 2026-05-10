@@ -29,8 +29,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .login-box{width:100%;max-width:360px;padding:40px 32px;position:relative;z-index:1}
 
 /* ====== DESKTOP RESPONSIVE ====== */
-@media(min-width:768px){
-  html,body{overflow:auto}
+
   .app{max-width:100%;flex-direction:row;height:100vh}
 
   /* Sidebar izquierdo */
@@ -247,47 +246,144 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 .plan-card:hover{border-color:var(--accentd)}
 .plan-card.selected{border-color:var(--accent);background:rgba(230,57,70,.08)}
 
-/* ====== DESKTOP SPLIT VIEW ====== */
+
+
+/* ====== RESPONSIVE DESKTOP ====== */
 @media(min-width:768px){
-  .split-container{display:flex;gap:0;height:100%;overflow:hidden}
-  .split-list{width:380px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
-  .split-list .search-area{padding:16px;flex-shrink:0;border-bottom:1px solid var(--border)}
-  .split-list .list-area{flex:1;overflow-y:auto;padding:12px}
-  .split-detail{flex:1;overflow-y:auto;padding:24px;background:var(--bg2)}
-  .split-detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text3);gap:12px}
-  .split-detail-empty .empty-icon{font-size:64px}
-
-  /* Nav sidebar item con bordes rojos */
-  .nav-item.active{background:rgba(230,57,70,.1);border-left:3px solid var(--accent)}
-
-  /* Sidebar brand */
-  .navbar::before{
-    background:linear-gradient(135deg,var(--accent),var(--accentd));
-    color:#fff;
-    font-size:14px;
-    font-weight:900;
-    letter-spacing:2px;
-    padding:20px;
+  html,body{overflow:hidden}
+  
+  .app{
+    max-width:100%;
+    height:100vh;
+    flex-direction:row;
   }
 
-  /* Stat grid 4 cols en dash */
-  .stat-grid{grid-template-columns:repeat(4,1fr);gap:16px}
-  .stat-num{font-size:32px}
+  /* SIDEBAR */
+  .navbar{
+    width:230px;
+    min-width:230px;
+    flex-direction:column;
+    flex-shrink:0;
+    height:100vh;
+    position:relative;
+    bottom:auto;left:auto;right:auto;
+    border-top:none;
+    border-right:1px solid var(--border);
+    background:var(--card);
+    z-index:10;
+    overflow:hidden;
+    justify-content:flex-start;
+    max-width:230px;
+    margin:0;
+  }
+  .navbar::before{
+    content:'❹ FOUR SEASONS';
+    display:flex;
+    align-items:center;
+    padding:22px 20px;
+    font-size:14px;
+    font-weight:900;
+    color:#fff;
+    letter-spacing:2px;
+    border-bottom:1px solid rgba(255,255,255,.15);
+    width:100%;
+    background:linear-gradient(135deg,#e63946,#b52d38);
+    flex-shrink:0;
+    min-height:64px;
+  }
+  .nav-item{
+    flex-direction:row;
+    justify-content:flex-start;
+    padding:15px 20px;
+    font-size:13px;
+    gap:14px;
+    border-radius:0;
+    width:100%;
+    letter-spacing:0;
+    text-transform:none;
+    font-weight:600;
+    border-left:3px solid transparent;
+    transition:all .15s;
+    color:var(--text2);
+  }
+  .nav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+  .nav-item.active{
+    background:rgba(230,57,70,.12);
+    border-left:3px solid var(--accent);
+    color:var(--accent);
+  }
+  .nav-icon{font-size:19px;min-width:22px}
 
-  /* Contenido mas espacioso */
+  /* MAIN AREA */
+  .main-area{
+    flex:1;
+    min-width:0;
+    height:100vh;
+    display:flex !important;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  .screen{height:100vh;overflow:hidden}
   .content{padding:28px;padding-bottom:28px}
-
-  /* Header mas alto */
   .header{padding:20px 28px}
   .header h2{font-size:22px}
 
-  /* Cards mas grandes */
-  .card{padding:20px}
+  /* DASHBOARD GRID 4 COLS */
+  .stat-grid{grid-template-columns:repeat(4,1fr);gap:16px}
+  .stat-num{font-size:30px}
+
+  /* SPLIT VIEW CLIENTES */
+  .split-container{display:flex;height:calc(100vh - 65px);overflow:hidden}
+  .split-list{
+    width:360px;min-width:360px;
+    flex-shrink:0;
+    border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+  .split-list .search-area{
+    padding:16px;
+    flex-shrink:0;
+    border-bottom:1px solid var(--border);
+    background:var(--bg);
+  }
+  .split-list .list-area{
+    flex:1;overflow-y:auto;padding:12px;
+  }
+  .split-detail{
+    flex:1;overflow-y:auto;
+    padding:28px;
+    background:var(--bg2);
+    min-width:0;
+  }
+  .split-detail-empty{
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    height:100%;color:var(--text3);gap:12px;
+  }
+  .split-detail-empty .empty-icon{font-size:64px}
+
+  /* MODALES */
+  .modal-overlay{max-width:100%;align-items:center}
+  .modal{border-radius:16px;max-width:580px;max-height:90vh;padding:32px;width:90%;margin:0 auto}
+
+  /* LOGIN full screen */
+  #screen-login{position:fixed;inset:0;z-index:200;max-width:100%}
+  .login-box{max-width:440px;padding:48px 40px}
 }
 
-/* ====== ACCENT GLOW ====== */
-.btn-primary{box-shadow:0 0 20px rgba(230,57,70,.2)}
-.stat-card.accent{box-shadow:0 0 24px rgba(230,57,70,.15)}
+
+/* Mobile: stack layout */
+@media(max-width:767px){
+  .main-area{display:flex;flex-direction:column;flex:1}
+  .split-container{flex-direction:column}
+  .split-list{width:100%;border-right:none}
+  .split-detail{display:none}
+}
+/* GLOW EFFECTS */
+.btn-primary{box-shadow:0 0 20px rgba(230,57,70,.15)}
+.btn-primary:hover{box-shadow:0 8px 24px rgba(230,57,70,.4)}
+.stat-card.accent{box-shadow:0 0 24px rgba(230,57,70,.1)}
 </style>
 </head>
 <body>
@@ -316,7 +412,29 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
 
-  <div class="main-area" id="main-area" style="display:none">
+    <!-- ====== NAV BAR ====== -->
+  <nav class="navbar" id="main-nav" style="display:none">
+    <button class="nav-item" data-screen="screen-dashboard" onclick="navTo('screen-dashboard',this)">
+      <span class="nav-icon">🏠</span>Inicio
+    </button>
+    <button class="nav-item" data-screen="screen-clientes" onclick="navTo('screen-clientes',this)">
+      <span class="nav-icon">👥</span>Clientes
+    </button>
+    <button class="nav-item" data-screen="screen-asistencia" onclick="navTo('screen-asistencia',this)">
+      <span class="nav-icon">✅</span>Asistencia
+    </button>
+    <button class="nav-item" data-screen="screen-inventario" onclick="navTo('screen-inventario',this)">
+      <span class="nav-icon">📦</span>Inventario
+    </button>
+    <button class="nav-item" data-screen="screen-movimientos" onclick="navTo('screen-movimientos',this)">
+      <span class="nav-icon">📊</span>Caja
+    </button>
+    <div id="nav-logout-desktop" style="margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);display:none">
+      <button onclick="logout()" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🚪 Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <div class="main-area" id="main-area">
   <!-- ===== DASHBOARD ===== -->
   <div id="screen-dashboard" class="screen">
     <div class="header">
@@ -500,28 +618,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
 
-  <!-- ====== NAV BAR ====== -->
-  <nav class="navbar" id="main-nav" style="display:none">
-    <button class="nav-item" data-screen="screen-dashboard" onclick="navTo('screen-dashboard',this)">
-      <span class="nav-icon">🏠</span>Inicio
-    </button>
-    <button class="nav-item" data-screen="screen-clientes" onclick="navTo('screen-clientes',this)">
-      <span class="nav-icon">👥</span>Clientes
-    </button>
-    <button class="nav-item" data-screen="screen-asistencia" onclick="navTo('screen-asistencia',this)">
-      <span class="nav-icon">✅</span>Asistencia
-    </button>
-    <button class="nav-item" data-screen="screen-inventario" onclick="navTo('screen-inventario',this)">
-      <span class="nav-icon">📦</span>Inventario
-    </button>
-    <button class="nav-item" data-screen="screen-movimientos" onclick="navTo('screen-movimientos',this)">
-      <span class="nav-icon">📊</span>Caja
-    </button>
-    <div id="nav-logout-desktop" style="margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);display:none">
-      <button onclick="logout()" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🚪 Cerrar sesión</button>
-    </div>
-  </nav>
-
   </div><!-- end main-area -->
 
   <!-- ====== MODALES ====== -->
@@ -700,7 +796,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
 // ============================================================
 // CONFIG — REEMPLAZAR CON TU URL
 // ============================================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbx1UmLGjg7H3BrcWcHJk3sEVYYXYGENoirexwymQMinYyG5ClcWTiIS2lGvHf3W5Urhng/exec';
+const API_URL = 'TU_URL_DE_APPS_SCRIPT_AQUI';
 const GYM_NAME = 'Four Seasons Gym';
 
 // ============================================================
@@ -850,25 +946,14 @@ function clearSession() {
   localStorage.removeItem('fs_user');
   state.token = null; state.user = null;
   document.getElementById('main-nav').style.display = 'none';
-  const mainArea = document.getElementById('main-area');
-  if (mainArea) mainArea.style.display = 'none';
   showScreen('screen-login');
 }
 
 function initApp() {
+  document.getElementById('main-nav').style.display = 'flex';
   const isDesktop = window.innerWidth >= 768;
-  const nav = document.getElementById('main-nav');
-  nav.style.display = 'flex';
-
-  if (isDesktop) {
-    // Mostrar main-area con margin para el sidebar
-    const mainArea = document.getElementById('main-area');
-    if (mainArea) mainArea.style.display = 'flex';
-    // Mostrar boton cerrar sesion en sidebar
-    const logoutBtn = document.getElementById('nav-logout-desktop');
-    if (logoutBtn) logoutBtn.style.display = 'block';
-  }
-
+  const logoutBtn = document.getElementById('nav-logout-desktop');
+  if (logoutBtn) logoutBtn.style.display = isDesktop ? 'block' : 'none';
   const hr = new Date().getHours();
   const greet = hr < 13 ? 'Buenos días' : hr < 20 ? 'Buenas tardes' : 'Buenas noches';
   document.getElementById('dash-greeting').textContent = greet + ',';
@@ -878,9 +963,8 @@ function initApp() {
 
 window.addEventListener('resize', () => {
   if (!state.user) return;
-  const isDesktop = window.innerWidth >= 768;
   const logoutBtn = document.getElementById('nav-logout-desktop');
-  if (logoutBtn) logoutBtn.style.display = isDesktop ? 'block' : 'none';
+  if (logoutBtn) logoutBtn.style.display = window.innerWidth >= 768 ? 'block' : 'none';
 });
 
 // Auto-login
