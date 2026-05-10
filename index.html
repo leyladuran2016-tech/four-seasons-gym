@@ -316,7 +316,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--f
     </div>
   </div>
 
-  <div class="main-area" id="main-area">
+  <div class="main-area" id="main-area" style="display:none">
   <!-- ===== DASHBOARD ===== -->
   <div id="screen-dashboard" class="screen">
     <div class="header">
@@ -850,6 +850,8 @@ function clearSession() {
   localStorage.removeItem('fs_user');
   state.token = null; state.user = null;
   document.getElementById('main-nav').style.display = 'none';
+  const mainArea = document.getElementById('main-area');
+  if (mainArea) mainArea.style.display = 'none';
   showScreen('screen-login');
 }
 
@@ -858,13 +860,13 @@ function initApp() {
   const nav = document.getElementById('main-nav');
   nav.style.display = 'flex';
 
-  // Desktop: mostrar sidebar y main-area
   if (isDesktop) {
-    document.getElementById('main-area').style.display = 'flex';
+    // Mostrar main-area con margin para el sidebar
+    const mainArea = document.getElementById('main-area');
+    if (mainArea) mainArea.style.display = 'flex';
+    // Mostrar boton cerrar sesion en sidebar
     const logoutBtn = document.getElementById('nav-logout-desktop');
     if (logoutBtn) logoutBtn.style.display = 'block';
-    // Ocultar boton salir del header en desktop
-    document.querySelectorAll('.dash-logout-btn').forEach(b => b.style.display = 'none');
   }
 
   const hr = new Date().getHours();
@@ -874,11 +876,11 @@ function initApp() {
   navTo('screen-dashboard', document.querySelector('[data-screen="screen-dashboard"]'));
 }
 
-// Re-check on resize
 window.addEventListener('resize', () => {
+  if (!state.user) return;
   const isDesktop = window.innerWidth >= 768;
   const logoutBtn = document.getElementById('nav-logout-desktop');
-  if (logoutBtn && state.user) logoutBtn.style.display = isDesktop ? 'block' : 'none';
+  if (logoutBtn) logoutBtn.style.display = isDesktop ? 'block' : 'none';
 });
 
 // Auto-login
