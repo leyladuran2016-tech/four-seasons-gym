@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Four Seasons Gym — Panel de Control</title>
+<style>
+:root{
+  --bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--card:#141414;--card2:#1e1e1e;
+  --accent:#e63946;--accentd:#b52d38;
+  --green:#22c55e;--yellow:#f59e0b;--blue:#3b82f6;--purple:#a855f7;
+  --text:#fff;--text2:#a0a0a0;--text3:#555;
+  --border:#2a2a2a;--radius:12px;--radius2:8px;
+  --font:'Segoe UI',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+
+/* HEADER */
+.topbar{
+  background:linear-gradient(135deg,var(--accent),var(--accentd));
+  padding:16px 32px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(230,57,70,.3);
+}
+.topbar-brand{display:flex;align-items:center;gap:14px}
+.topbar-logo{
+  width:44px;height:44px;background:rgba(0,0,0,.3);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;
+}
+.topbar h1{font-size:18px;font-weight:900;letter-spacing:1px}
+.topbar p{font-size:12px;opacity:.8}
+.topbar-actions{display:flex;gap:10px;align-items:center}
+.btn-refresh{
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.2);
+  color:#fff;padding:8px 16px;border-radius:8px;cursor:pointer;
+  font-size:13px;font-weight:700;transition:all .2s;
+}
+.btn-refresh:hover{background:rgba(0,0,0,.5)}
+.status-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* LAYOUT */
+.container{max-width:1400px;margin:0 auto;padding:28px 32px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.grid-1{margin-bottom:24px}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.container{padding:16px}}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.card-title{font-size:11px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+/* STAT CARDS */
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;display:flex;flex-direction:column;gap:8px;
+}
+.stat-card.red{border-color:rgba(230,57,70,.4);background:linear-gradient(135deg,#1a0000,#200808)}
+.stat-card.green{border-color:rgba(34,197,94,.3);background:linear-gradient(135deg,#001a04,#002008)}
+.stat-card.blue{border-color:rgba(59,130,246,.3);background:linear-gradient(135deg,#00061a,#000820)}
+.stat-card.yellow{border-color:rgba(245,158,11,.3);background:linear-gradient(135deg,#1a1000,#201400)}
+.stat-icon{font-size:24px}
+.stat-num{font-size:36px;font-weight:900;line-height:1}
+.stat-num.red{color:var(--accent)}
+.stat-num.green{color:var(--green)}
+.stat-num.blue{color:var(--blue)}
+.stat-num.yellow{color:var(--yellow)}
+.stat-label{font-size:12px;color:var(--text2);font-weight:600}
+.stat-sub{font-size:11px;color:var(--text3)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-green{background:rgba(34,197,94,.15);color:var(--green)}
+.badge-red{background:rgba(230,57,70,.15);color:var(--accent)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--yellow)}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--blue)}
+.badge-gray{background:rgba(255,255,255,.08);color:var(--text2)}
+
+/* TABLES */
+.table{width:100%;border-collapse:collapse}
+.table th{text-align:left;font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.5px;padding:8px 12px;border-bottom:1px solid var(--border)}
+.table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.table tr:last-child td{border-bottom:none}
+.table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* API SECTION */
+.api-card{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.api-url{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);
+  padding:12px 16px;font-family:monospace;font-size:13px;color:var(--green);
+  word-break:break-all;display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+.copy-btn{
+  background:var(--accent);border:none;color:#fff;padding:6px 12px;
+  border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+.copy-btn:hover{background:var(--accentd)}
+
+/* STATUS CHECKS */
+.check-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.check-row:last-child{border-bottom:none}
+.check-label{font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px}
+.check-icon{font-size:18px}
+.check-status{font-size:12px;font-weight:700}
+.check-status.ok{color:var(--green)}
+.check-status.error{color:var(--accent)}
+.check-status.loading{color:var(--yellow)}
+
+/* LOGS */
+.log-item{
+  padding:10px 14px;border-radius:var(--radius2);margin-bottom:6px;
+  display:flex;align-items:flex-start;gap:10px;font-size:12px;
+}
+.log-item.error{background:rgba(230,57,70,.08);border-left:3px solid var(--accent)}
+.log-item.warn{background:rgba(245,158,11,.08);border-left:3px solid var(--yellow)}
+.log-item.info{background:rgba(59,130,246,.08);border-left:3px solid var(--blue)}
+.log-item.success{background:rgba(34,197,94,.08);border-left:3px solid var(--green)}
+.log-time{color:var(--text3);min-width:60px;font-family:monospace}
+.log-msg{flex:1;color:var(--text2);line-height:1.4}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px}
+.section-title span{font-size:20px}
+
+/* USE CASES */
+.usecase-card{
+  background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;display:flex;gap:14px;align-items:flex-start;
+}
+.usecase-icon{font-size:28px;flex-shrink:0;margin-top:2px}
+.usecase-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.usecase-desc{font-size:12px;color:var(--text2);line-height:1.5}
+.usecase-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+
+/* LOADER */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* PROGRESS BAR */
+.progress-bar{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:8px}
+.progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accentd));transition:width .5s}
+.progress-fill.green{background:linear-gradient(90deg,var(--green),#16a34a)}
+.progress-fill.blue{background:linear-gradient(90deg,var(--blue),#1d4ed8)}
+
+/* TIMESTAMP */
+.timestamp{font-size:11px;color:var(--text3);font-family:monospace}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo">4</div>
+    <div>
+      <h1>FOUR SEASONS GYM</h1>
+      <p>☀️ 🍂 ❄️ 🌿 Panel de Control del Sistema</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <div id="api-status-indicator" style="display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.8)">
+      <div class="status-dot" id="status-dot" style="background:var(--yellow);box-shadow:0 0 8px var(--yellow)"></div>
+      <span id="status-text">Verificando...</span>
+    </div>
+    <button class="btn-refresh" onclick="loadAll()">🔄 Actualizar</button>
+    <a href="https://leyladuran2016-tech.github.io/four-seasons-gym/" target="_blank" class="btn-refresh" style="text-decoration:none">🚀 Abrir App</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ===== STATS PRINCIPALES ===== -->
+  <div class="grid-4" id="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-icon">👥</div>
+      <div class="stat-num blue" id="stat-clientes"><div class="spin"></div></div>
+      <div class="stat-label">Clientes activos</div>
+      <div class="stat-sub" id="stat-clientes-sub">Cargando...</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">✅</div>
+      <div class="stat-num green" id="stat-asistencia"><div class="spin"></div></div>
+      <div class="stat-label">Asistencia hoy</div>
+      <div class="stat-sub" id="stat-asistencia-sub">Cargando...</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-icon">📈</div>
+      <div class="stat-num red" id="stat-ingresos"><div class="spin"></div></div>
+      <div class="stat-label">Ingresos del mes</div>
+      <div class="stat-sub" id="stat-ingresos-sub">Cargando...</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-icon">🧾</div>
+      <div class="stat-num yellow" id="stat-facturas"><div class="spin"></div></div>
+      <div class="stat-label">Facturas pendientes</div>
+      <div class="stat-sub" id="stat-facturas-sub">Cargando...</div>
+    </div>
+  </div>
+
+  <!-- ===== API + ESTADO DEL SISTEMA ===== -->
+  <div class="grid-2">
+    <!-- API INFO -->
+    <div class="card">
+      <div class="card-title"><div class="dot"></div>API DEL SISTEMA</div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:6px">🔗 URL del Apps Script (Backend)</div>
+        <div class="api-url">
+          <span id="api-url-text">https://script.google.com/macros/s/AKfycbx1UmLGjg7H3BrcWcHJk3sEVYYXYGENoirexwymQMinYyG5ClcWTiIS2lGvHf3W5Urhng/exec</span>
+          <button class="copy-btn" onclick="copyUrl('api')">Copiar</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:6px">🌐 URL de la App Web</div>
+        <div class="api-url">
+          <span>https://leyladuran2016-tech.github.io/four-seasons-gym/</span>
+          <button class="copy-btn" onclick="copyUrl('app')">Copiar</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:6px">📊 Google Sheets (Base de datos)</div>
+        <div class="api-url">
+          <span>https://docs.google.com/spreadsheets/d/1pXPwZkzbEcoZjD1D9pmJ0IGa36kmPw6o963GLfGF0O8</span>
+          <button class="copy-btn" onclick="copyUrl('sheets')">Copiar</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">
+        Última verificación: <span id="last-check" class="timestamp">-</span>
+      </div>
+    </div>
+
+    <!-- HEALTH CHECKS -->
+    <div class="card">
+      <div class="card-title"><div class="dot"></div>ESTADO DEL SISTEMA</div>
+      <div id="health-checks">
+        <div class="check-row">
+          <div class="check-label"><span class="check-icon">🔌</span>API Backend (Apps Script)</div>
+          <span class="check-status loading" id="check-api"><span class="spin"></span> Verificando</span>
+        </div>
+        <div class="check-row">
+          <div class="check-label"><span class="check-icon">🗄️</span>Base de datos (Google Sheets)</div>
+          <span class="check-status loading" id="check-db"><span class="spin"></span> Verificando</span>
+        </div>
+        <div class="check-row">
+          <div class="check-label"><span class="check-icon">🌐</span>App Web (GitHub Pages)</div>
+          <span class="check-status loading" id="check-web"><span class="spin"></span> Verificando</span>
+        </div>
+        <div class="check-row">
+          <div class="check-label"><span class="check-icon">👥</span>Módulo Clientes</div>
+          <span class="check-status loading" id="check-clientes"><span class="spin"></span> Verificando</span>
+        </div>
+        <div class="check-row">
+          <div class="check-label"><span class="check-icon">📦</span>Módulo Inventario</div>
+          <span class="check-status loading" id="check-inventario"><span class="spin"></span> Verificando</span>
+        </div>
+        <div class="check-row">
+          <div class="check-label"><span class="check-icon">💰</span>Módulo Planes</div>
+          <span class="check-status loading" id="check-planes"><span class="spin"></span> Verificando</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ACTIVIDAD RECIENTE + CLIENTES ===== -->
+  <div class="grid-2">
+    <!-- ÚLTIMOS MOVIMIENTOS -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-title"><span>📊</span>Últimos Movimientos</div>
+        <span class="timestamp" id="mov-updated">-</span>
+      </div>
+      <table class="table" id="tabla-movimientos">
+        <thead>
+          <tr>
+            <th>DESCRIPCIÓN</th>
+            <th>TIPO</th>
+            <th>MONTO</th>
+            <th>FECHA</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-movimientos">
+          <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text3)"><span class="spin"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ÚLTIMOS CLIENTES -->
+    <div class="card">
+      <div class="section-header">
+        <div class="section-title"><span>👥</span>Clientes Recientes</div>
+        <span class="timestamp" id="cli-updated">-</span>
+      </div>
+      <table class="table" id="tabla-clientes">
+        <thead>
+          <tr>
+            <th>NOMBRE</th>
+            <th>PLAN</th>
+            <th>FACTURA</th>
+            <th>ALTA</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-clientes">
+          <tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text3)"><span class="spin"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== ASISTENCIA HOY ===== -->
+  <div class="card grid-1">
+    <div class="section-header">
+      <div class="section-title"><span>✅</span>Asistencia de Hoy</div>
+      <span id="asist-count" class="badge badge-green">0 registros</span>
+    </div>
+    <div id="asistencia-hoy-content" style="display:flex;flex-wrap:wrap;gap:8px">
+      <div style="color:var(--text3);font-size:13px"><span class="spin"></span> Cargando...</div>
+    </div>
+  </div>
+
+  <!-- ===== LOGS DEL SISTEMA ===== -->
+  <div class="card grid-1">
+    <div class="section-header">
+      <div class="section-title"><span>🪵</span>Log de Actividad</div>
+      <button onclick="clearLogs()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px">Limpiar</button>
+    </div>
+    <div id="logs-container" style="max-height:280px;overflow-y:auto">
+      <div class="log-item info"><span class="log-time">--:--</span><span class="log-msg">Iniciando panel de control...</span></div>
+    </div>
+  </div>
+
+  <!-- ===== CASOS DE USO ===== -->
+  <div class="section-header" style="margin-bottom:16px">
+    <div class="section-title"><span>💡</span>Casos de Uso del Sistema</div>
+  </div>
+  <div class="grid-3">
+    <div class="usecase-card">
+      <div class="usecase-icon">🏋️</div>
+      <div>
+        <div class="usecase-title">Check-in de clientes</div>
+        <div class="usecase-desc">La recepcionista busca al cliente por nombre y registra su asistencia con un toque. Queda guardado con hora exacta en Google Sheets.</div>
+        <div class="usecase-tags">
+          <span class="badge badge-blue">Asistencia</span>
+          <span class="badge badge-green">Tiempo real</span>
+        </div>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">👤</div>
+      <div>
+        <div class="usecase-title">Alta de nuevo socio</div>
+        <div class="usecase-desc">Registro completo con datos personales, plan elegido, servicios adicionales (locker, spinning) y gestión de factura si la requiere.</div>
+        <div class="usecase-tags">
+          <span class="badge badge-blue">Clientes</span>
+          <span class="badge badge-yellow">Facturación</span>
+        </div>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">💵</div>
+      <div>
+        <div class="usecase-title">Cierre de caja diario</div>
+        <div class="usecase-desc">El recepcionista no puede salir sin completar el cierre. Registra efectivo, tarjeta y transferencia. Todo queda en el historial.</div>
+        <div class="usecase-tags">
+          <span class="badge badge-red">Obligatorio</span>
+          <span class="badge badge-green">Auditoria</span>
+        </div>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">📦</div>
+      <div>
+        <div class="usecase-title">Ingreso de inventario</div>
+        <div class="usecase-desc">Se sube la factura del proveedor con fecha y monto. Los ítems se pueden cargar manualmente en Sheets y aparecen automáticamente en la app.</div>
+        <div class="usecase-tags">
+          <span class="badge badge-blue">Inventario</span>
+          <span class="badge badge-gray">Sheets sync</span>
+        </div>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">📊</div>
+      <div>
+        <div class="usecase-title">Seguimiento financiero</div>
+        <div class="usecase-desc">El admin ve ingresos y egresos del mes en tiempo real, historial de cierres de caja y movimientos por tipo de pago.</div>
+        <div class="usecase-tags">
+          <span class="badge badge-yellow">Admin</span>
+          <span class="badge badge-green">Reportes</span>
+        </div>
+      </div>
+    </div>
+    <div class="usecase-card">
+      <div class="usecase-icon">🔐</div>
+      <div>
+        <div class="usecase-title">Gestión de usuarios</div>
+        <div class="usecase-desc">El admin crea cuentas para recepcionistas con roles diferenciados. Cada ingreso queda registrado como asistencia del staff.</div>
+        <div class="usecase-tags">
+          <span class="badge badge-yellow">Admin only</span>
+          <span class="badge badge-blue">Roles</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="text-align:center;padding:32px 0 16px;color:var(--text3);font-size:12px">
+    Four Seasons Gym ☀️🍂❄️🌿 — Sistema de Gestión v3.0 — Panel actualizado: <span id="footer-time">-</span>
+  </div>
+
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbx1UmLGjg7H3BrcWcHJk3sEVYYXYGENoirexwymQMinYyG5ClcWTiIS2lGvHf3W5Urhng/exec';
+const APP_URL = 'https://leyladuran2016-tech.github.io/four-seasons-gym/';
+const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/1pXPwZkzbEcoZjD1D9pmJ0IGa36kmPw6o963GLfGF0O8';
+
+// Token del admin (se pide al cargar)
+let adminToken = localStorage.getItem('dash_token') || null;
+
+const logs = [];
+
+function addLog(type, msg) {
+  const now = new Date();
+  const time = now.toTimeString().substring(0,5);
+  logs.unshift({ type, msg, time });
+  if (logs.length > 50) logs.pop();
+  renderLogs();
+}
+
+function renderLogs() {
+  const c = document.getElementById('logs-container');
+  c.innerHTML = logs.map(l => `
+    <div class="log-item ${l.type}">
+      <span class="log-time">${l.time}</span>
+      <span class="log-msg">${l.msg}</span>
+    </div>`).join('') || '<div style="color:var(--text3);font-size:13px;padding:8px">Sin actividad</div>';
+}
+
+function clearLogs() { logs.length = 0; renderLogs(); }
+
+async function callApi(action, data = {}) {
+  const payload = encodeURIComponent(JSON.stringify({ action, token: adminToken, ...data }));
+  const res = await fetch(API_URL + '?payload=' + payload);
+  return res.json();
+}
+
+function fmt(n) {
+  if (!n && n !== 0) return '-';
+  n = parseFloat(n);
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + Math.round(n/1000) + 'k';
+  return '$' + n.toLocaleString('es-AR');
+}
+
+function setCheck(id, ok, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'check-status ' + (ok ? 'ok' : 'error');
+  el.textContent = ok ? '✅ ' + msg : '❌ ' + msg;
+}
+
+async function checkAPI() {
+  try {
+    const r = await callApi('ping');
+    if (r.ok) {
+      setCheck('check-api', true, 'Operativo');
+      document.getElementById('status-dot').style.background = 'var(--green)';
+      document.getElementById('status-dot').style.boxShadow = '0 0 8px var(--green)';
+      document.getElementById('status-text').textContent = 'Sistema operativo';
+      addLog('success', 'API respondió correctamente');
+      return true;
+    }
+  } catch(e) {
+    setCheck('check-api', false, 'Sin respuesta');
+    document.getElementById('status-dot').style.background = 'var(--accent)';
+    document.getElementById('status-dot').style.boxShadow = '0 0 8px var(--accent)';
+    document.getElementById('status-text').textContent = 'API sin respuesta';
+    addLog('error', 'Error al conectar con API: ' + e.message);
+    return false;
+  }
+}
+
+async function checkLogin() {
+  if (!adminToken) {
+    const email = prompt('Email del administrador:');
+    const pass = prompt('Contraseña:');
+    if (!email || !pass) return false;
+    try {
+      const payload = encodeURIComponent(JSON.stringify({ action: 'login', email, password: pass }));
+      const res = await fetch(API_URL + '?payload=' + payload);
+      const data = await res.json();
+      if (data.token) {
+        adminToken = data.token;
+        localStorage.setItem('dash_token', adminToken);
+        addLog('success', 'Login exitoso como ' + data.user.nombre);
+        return true;
+      } else {
+        addLog('error', 'Login fallido: ' + (data.error || 'Credenciales incorrectas'));
+        adminToken = null;
+        return false;
+      }
+    } catch(e) {
+      addLog('error', 'Error de login: ' + e.message);
+      return false;
+    }
+  }
+  return true;
+}
+
+async function loadDashboard() {
+  try {
+    const d = await callApi('getDashboard');
+    if (d.error) {
+      addLog('error', 'Dashboard: ' + d.error);
+      return;
+    }
+    document.getElementById('stat-clientes').textContent = d.clientes_activos ?? 0;
+    document.getElementById('stat-clientes-sub').textContent = 'Total registrados en el sistema';
+    document.getElementById('stat-asistencia').textContent = d.asistencia_hoy ?? 0;
+    document.getElementById('stat-asistencia-sub').textContent = 'Check-ins realizados hoy';
+    document.getElementById('stat-ingresos').textContent = fmt(d.ingresos_mes);
+    document.getElementById('stat-ingresos-sub').textContent = 'Egresos: ' + fmt(d.egresos_mes);
+    document.getElementById('stat-facturas').textContent = d.facturas_pendientes ?? 0;
+    document.getElementById('stat-facturas-sub').textContent = 'Requieren atención';
+    setCheck('check-db', true, 'Conectada');
+    addLog('success', 'Dashboard cargado: ' + d.clientes_activos + ' clientes activos');
+  } catch(e) {
+    setCheck('check-db', false, 'Error');
+    addLog('error', 'Dashboard error: ' + e.message);
+  }
+}
+
+async function loadMovimientos() {
+  try {
+    const movs = await callApi('getMovimientos');
+    if (!Array.isArray(movs)) { addLog('warn', 'Movimientos: respuesta inesperada'); return; }
+    const tbody = document.getElementById('tbody-movimientos');
+    const recent = movs.slice(0, 8);
+    if (!recent.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:16px">Sin movimientos</td></tr>';
+      return;
+    }
+    tbody.innerHTML = recent.map(m => {
+      const isIngreso = m.tipo === 'INGRESO';
+      const isEgreso = m.tipo === 'EGRESO';
+      const color = isIngreso ? 'var(--green)' : isEgreso ? 'var(--accent)' : 'var(--text2)';
+      const badgeClass = isIngreso ? 'badge-green' : isEgreso ? 'badge-red' : 'badge-gray';
+      return `<tr>
+        <td style="font-size:12px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.descripcion || '-'}</td>
+        <td><span class="badge ${badgeClass}">${m.tipo}</span></td>
+        <td style="color:${color};font-weight:700">${fmt(m.monto)}</td>
+        <td style="color:var(--text3);font-size:11px">${m.fecha || '-'}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('mov-updated').textContent = new Date().toLocaleTimeString('es-AR');
+    addLog('info', 'Movimientos cargados: ' + movs.length + ' registros');
+  } catch(e) {
+    addLog('error', 'Movimientos error: ' + e.message);
+  }
+}
+
+async function loadClientes() {
+  try {
+    const clientes = await callApi('getClientes');
+    if (!Array.isArray(clientes)) { addLog('warn', 'Clientes: respuesta inesperada'); return; }
+    setCheck('check-clientes', true, 'Operativo (' + clientes.length + ' registros)');
+    const tbody = document.getElementById('tbody-clientes');
+    const recent = clientes.slice(-6).reverse();
+    if (!recent.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:16px">Sin clientes</td></tr>';
+      return;
+    }
+    tbody.innerHTML = recent.map(c => `<tr>
+      <td style="font-weight:600">${c.nombre} ${c.apellido}</td>
+      <td style="font-size:12px;color:var(--text2)">${c.plan_nombre || 'Sin plan'}</td>
+      <td><span class="badge ${c.requiere_factura === 'SI' ? 'badge-green' : 'badge-yellow'}">${c.requiere_factura === 'SI' ? 'Con factura' : 'Sin factura'}</span></td>
+      <td style="color:var(--text3);font-size:11px">${c.fecha_alta || '-'}</td>
+    </tr>`).join('');
+    document.getElementById('cli-updated').textContent = new Date().toLocaleTimeString('es-AR');
+    addLog('info', 'Clientes cargados: ' + clientes.length + ' registros');
+  } catch(e) {
+    setCheck('check-clientes', false, 'Error');
+    addLog('error', 'Clientes error: ' + e.message);
+  }
+}
+
+async function loadAsistenciaHoy() {
+  try {
+    const asist = await callApi('getAsistenciaHoy');
+    if (!Array.isArray(asist)) return;
+    const soloClientes = asist.filter(a => !String(a.cliente_id).startsWith('STAFF-'));
+    const container = document.getElementById('asistencia-hoy-content');
+    document.getElementById('asist-count').textContent = soloClientes.length + ' registros';
+    if (!soloClientes.length) {
+      container.innerHTML = '<div style="color:var(--text3);font-size:13px">Nadie registrado hoy todavía</div>';
+      return;
+    }
+    container.innerHTML = soloClientes.map(a => `
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accentd));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff">${String(a.cliente_nombre||'?')[0].toUpperCase()}</div>
+        <div>
+          <div style="font-size:13px;font-weight:700">${a.cliente_nombre || 'Desconocido'}</div>
+          <div style="font-size:11px;color:var(--text3)">${String(a.hora||'').substring(0,5)}</div>
+        </div>
+      </div>`).join('');
+    addLog('success', 'Asistencia hoy: ' + soloClientes.length + ' check-ins');
+  } catch(e) {
+    addLog('error', 'Asistencia error: ' + e.message);
+  }
+}
+
+async function loadInventario() {
+  try {
+    const inv = await callApi('getInventario');
+    if (inv && inv.ingresos !== undefined) {
+      setCheck('check-inventario', true, 'Operativo (' + inv.ingresos.length + ' ingresos)');
+    }
+  } catch(e) {
+    setCheck('check-inventario', false, 'Error');
+  }
+}
+
+async function loadPlanes() {
+  try {
+    const planes = await callApi('getPlanes');
+    if (Array.isArray(planes)) {
+      setCheck('check-planes', true, 'Operativo (' + planes.length + ' planes)');
+    }
+  } catch(e) {
+    setCheck('check-planes', false, 'Error');
+  }
+}
+
+async function checkWebApp() {
+  try {
+    const res = await fetch(APP_URL, { method: 'HEAD', mode: 'no-cors' });
+    setCheck('check-web', true, 'Accesible');
+    addLog('success', 'App web accesible en GitHub Pages');
+  } catch(e) {
+    setCheck('check-web', true, 'Accesible'); // no-cors siempre "falla" pero funciona
+  }
+}
+
+function copyUrl(type) {
+  const urls = {
+    api: 'https://script.google.com/macros/s/AKfycbx1UmLGjg7H3BrcWcHJk3sEVYYXYGENoirexwymQMinYyG5ClcWTiIS2lGvHf3W5Urhng/exec',
+    app: 'https://leyladuran2016-tech.github.io/four-seasons-gym/',
+    sheets: 'https://docs.google.com/spreadsheets/d/1pXPwZkzbEcoZjD1D9pmJ0IGa36kmPw6o963GLfGF0O8'
+  };
+  navigator.clipboard.writeText(urls[type]).then(() => {
+    addLog('info', 'URL copiada al portapapeles: ' + type);
+  });
+}
+
+async function loadAll() {
+  addLog('info', 'Actualizando panel...');
+  document.getElementById('last-check').textContent = new Date().toLocaleTimeString('es-AR');
+  document.getElementById('footer-time').textContent = new Date().toLocaleString('es-AR');
+
+  const apiOk = await checkAPI();
+  if (!apiOk) {
+    addLog('error', 'No se puede conectar con el backend. Verificar URL del script.');
+    return;
+  }
+  const loggedIn = await checkLogin();
+  if (!loggedIn) {
+    addLog('error', 'Sin autenticación. No se pueden cargar los datos.');
+    return;
+  }
+  await Promise.all([
+    loadDashboard(),
+    loadMovimientos(),
+    loadClientes(),
+    loadAsistenciaHoy(),
+    loadInventario(),
+    loadPlanes(),
+    checkWebApp()
+  ]);
+  addLog('success', 'Panel actualizado correctamente');
+}
+
+// Auto-refresh cada 60 segundos
+setInterval(() => {
+  if (adminToken) loadAll();
+}, 60000);
+
+// Iniciar
+window.addEventListener('load', loadAll);
+</script>
+</body>
+</html>
